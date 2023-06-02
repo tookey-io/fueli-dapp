@@ -24,7 +24,20 @@ import { DiamondIcon } from "@/components/DiamondIcon";
 // import stevenMchailImage from "@/images/avatars/steven-mchail.jpg";
 // import waylonHydenImage from "@/images/avatars/waylon-hyden.jpg";
 
-const days = [
+type RichRecord = {
+  name: string
+  role: string
+  image: string
+}
+
+type TrackRecord = {
+  name: string
+  date: string
+  dateTime: string
+  speakers: RichRecord[]
+}
+
+const days: TrackRecord[] = [
   {
     name: "Most",
     date: "Valuable",

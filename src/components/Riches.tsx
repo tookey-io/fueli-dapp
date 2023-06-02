@@ -30,42 +30,42 @@ const days = [
     date: "Valuable",
     dateTime: "2022-04-04",
     speakers: [
-      {
-        name: "Steven McHail",
-        role: "Designer at Globex Corporation",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
-      {
-        name: "Jaquelin Isch",
-        role: "UX Design at InGen",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/98ee6b9d-c2e3-45e5-2367-0be40e17bc00/public",
-      },
-      {
-        name: "Dianne Guilianelli",
-        role: "General Manager at Initech",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
-      {
-        name: "Ronni Cantadore",
-        role: "Design Engineer at Weyland-Yutani",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
-      {
-        name: "Erhart Cockrin",
-        role: "Product Lead at Cyberdyne Systems",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
-      {
-        name: "Parker Johnson",
-        role: "UI Designer at MomCorp",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
+      // {
+      //   name: "Steven McHail",
+      //   role: "Designer at Globex Corporation",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
+      // {
+      //   name: "Jaquelin Isch",
+      //   role: "UX Design at InGen",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/98ee6b9d-c2e3-45e5-2367-0be40e17bc00/public",
+      // },
+      // {
+      //   name: "Dianne Guilianelli",
+      //   role: "General Manager at Initech",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
+      // {
+      //   name: "Ronni Cantadore",
+      //   role: "Design Engineer at Weyland-Yutani",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
+      // {
+      //   name: "Erhart Cockrin",
+      //   role: "Product Lead at Cyberdyne Systems",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
+      // {
+      //   name: "Parker Johnson",
+      //   role: "UI Designer at MomCorp",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
     ],
   },
   {
@@ -73,42 +73,42 @@ const days = [
     date: "Recent",
     dateTime: "2022-04-05",
     speakers: [
-      {
-        name: "Damaris Kimura",
-        role: "Senior Engineer at OCP",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
-      {
-        name: "Ibrahim Frasch",
-        role: "Programmer at Umbrella Corp",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
-      {
-        name: "Cathlene Burrage",
-        role: "Frontend Developer at Buy n Large",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
-      {
-        name: "Rinaldo Beynon",
-        role: "Data Scientist at Rekall",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
-      {
-        name: "Waylon Hyden",
-        role: "DevOps at RDA Corporation",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
-      {
-        name: "Giordano Sagucio",
-        role: "Game Developer at Soylent Corp",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
+      // {
+      //   name: "Damaris Kimura",
+      //   role: "Senior Engineer at OCP",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
+      // {
+      //   name: "Ibrahim Frasch",
+      //   role: "Programmer at Umbrella Corp",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
+      // {
+      //   name: "Cathlene Burrage",
+      //   role: "Frontend Developer at Buy n Large",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
+      // {
+      //   name: "Rinaldo Beynon",
+      //   role: "Data Scientist at Rekall",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
+      // {
+      //   name: "Waylon Hyden",
+      //   role: "DevOps at RDA Corporation",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
+      // {
+      //   name: "Giordano Sagucio",
+      //   role: "Game Developer at Soylent Corp",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
     ],
   },
   {
@@ -116,42 +116,42 @@ const days = [
     date: "Active",
     dateTime: "2022-04-06",
     speakers: [
-      {
-        name: "Andrew Greene",
-        role: "Frontend Developer at Ultratech",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
-      {
-        name: "Heather Terry",
-        role: "Backend Developer at Xanatos Enterprises",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
-      {
-        name: "Piers Wilkins",
-        role: "Full stack Developer at BiffCo",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
-      {
-        name: "Gordon Sanderson",
-        role: "Mobile Developer at Cobra Industries",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
-      {
-        name: "Kimberly Parsons",
-        role: "Game Developer at Tyrell Corporation",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
-      {
-        name: "Richard Astley",
-        role: "CEO at Roll Out",
-        image:
-          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
-      },
+      // {
+      //   name: "Andrew Greene",
+      //   role: "Frontend Developer at Ultratech",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
+      // {
+      //   name: "Heather Terry",
+      //   role: "Backend Developer at Xanatos Enterprises",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
+      // {
+      //   name: "Piers Wilkins",
+      //   role: "Full stack Developer at BiffCo",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
+      // {
+      //   name: "Gordon Sanderson",
+      //   role: "Mobile Developer at Cobra Industries",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
+      // {
+      //   name: "Kimberly Parsons",
+      //   role: "Game Developer at Tyrell Corporation",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
+      // {
+      //   name: "Richard Astley",
+      //   role: "CEO at Roll Out",
+      //   image:
+      //     "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
+      // },
     ],
   },
 ];

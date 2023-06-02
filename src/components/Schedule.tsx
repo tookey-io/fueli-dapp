@@ -1,212 +1,231 @@
-import { useEffect, useState } from 'react'
-import Image from 'next/image'
-import { Tab } from '@headlessui/react'
-import clsx from 'clsx'
+import React, { HTMLProps, useEffect, useState } from "react";
+import Image from "next/image";
+import { Tab } from "@headlessui/react";
+import clsx from "clsx";
 
-import { Container } from '@/components/Container'
-import backgroundImage from '@/images/background.jpg'
+import { Container } from "@/components/Container";
+import backgroundImage from "@/images/background.jpg";
+import { HtmlProps } from "next/dist/shared/lib/html-context";
 
-const schedule = [
+type SlotRecord = {
+  name: React.ReactNode;
+  description: React.ReactNode;
+  start: string;
+  end: string;
+};
+
+type ScheduleRecord = {
+  date: React.ReactNode;
+  dateTime: string;
+  summary: React.ReactNode;
+  timeSlots: SlotRecord[];
+};
+
+const schedule: ScheduleRecord[] = [
   {
-    date: 'April 4',
-    dateTime: '2022-04-04',
+    date: "April 4",
+    dateTime: "2022-04-04",
     summary:
-      'The first day of the conference is focused on dark patterns for ecommerce.',
+      "The first day of the conference is focused on dark patterns for ecommerce.",
     timeSlots: [
       {
-        name: 'Steven McHail',
-        description: 'Not so one-time payments',
-        start: '9:00AM',
-        end: '10:00AM',
+        name: "Steven McHail",
+        description: "Not so one-time payments",
+        start: "9:00AM",
+        end: "10:00AM",
       },
       {
-        name: 'Jaquelin Isch',
-        description: 'The finer print',
-        start: '10:00AM',
-        end: '11:00AM',
+        name: "Jaquelin Isch",
+        description: "The finer print",
+        start: "10:00AM",
+        end: "11:00AM",
       },
       {
-        name: 'Dianne Guilianelli',
-        description: 'Post-purchase blackmail',
-        start: '11:00AM',
-        end: '12:00PM',
+        name: "Dianne Guilianelli",
+        description: "Post-purchase blackmail",
+        start: "11:00AM",
+        end: "12:00PM",
       },
       {
-        name: 'Lunch',
+        name: "Lunch",
         description: null,
-        start: '12:00PM',
-        end: '1:00PM',
+        start: "12:00PM",
+        end: "1:00PM",
       },
       {
-        name: 'Ronni Cantadore',
-        description: 'Buy or die',
-        start: '1:00PM',
-        end: '2:00PM',
+        name: "Ronni Cantadore",
+        description: "Buy or die",
+        start: "1:00PM",
+        end: "2:00PM",
       },
       {
-        name: 'Erhart Cockrin',
-        description: 'In-person cancellation',
-        start: '2:00PM',
-        end: '3:00PM',
+        name: "Erhart Cockrin",
+        description: "In-person cancellation",
+        start: "2:00PM",
+        end: "3:00PM",
       },
       {
-        name: 'Parker Johnson',
-        description: 'The pay/cancel switcheroo',
-        start: '3:00PM',
-        end: '4:00PM',
+        name: "Parker Johnson",
+        description: "The pay/cancel switcheroo",
+        start: "3:00PM",
+        end: "4:00PM",
       },
     ],
   },
   {
-    date: 'April 5',
-    dateTime: '2022-04-05',
+    date: "April 5",
+    dateTime: "2022-04-05",
     summary:
-      'Next we spend the day talking about deceiving people with technology.',
+      "Next we spend the day talking about deceiving people with technology.",
     timeSlots: [
       {
-        name: 'Damaris Kimura',
-        description: 'The invisible card reader',
-        start: '9:00AM',
-        end: '10:00AM',
+        name: "Damaris Kimura",
+        description: "The invisible card reader",
+        start: "9:00AM",
+        end: "10:00AM",
       },
       {
-        name: 'Ibrahim Frasch',
-        description: 'Stealing fingerprints',
-        start: '10:00AM',
-        end: '11:00AM',
+        name: "Ibrahim Frasch",
+        description: "Stealing fingerprints",
+        start: "10:00AM",
+        end: "11:00AM",
       },
       {
-        name: 'Cathlene Burrage',
-        description: 'Voting machines',
-        start: '11:00AM',
-        end: '12:00PM',
+        name: "Cathlene Burrage",
+        description: "Voting machines",
+        start: "11:00AM",
+        end: "12:00PM",
       },
       {
-        name: 'Lunch',
+        name: "Lunch",
         description: null,
-        start: '12:00PM',
-        end: '1:00PM',
+        start: "12:00PM",
+        end: "1:00PM",
       },
       {
-        name: 'Rinaldo Beynon',
-        description: 'Blackhat SEO that works',
-        start: '1:00PM',
-        end: '2:00PM',
+        name: "Rinaldo Beynon",
+        description: "Blackhat SEO that works",
+        start: "1:00PM",
+        end: "2:00PM",
       },
       {
-        name: 'Waylon Hyden',
-        description: 'Turning your audience into a botnet',
-        start: '2:00PM',
-        end: '3:00PM',
+        name: "Waylon Hyden",
+        description: "Turning your audience into a botnet",
+        start: "2:00PM",
+        end: "3:00PM",
       },
       {
-        name: 'Giordano Sagucio',
-        description: 'Fly phishing',
-        start: '3:00PM',
-        end: '4:00PM',
+        name: "Giordano Sagucio",
+        description: "Fly phishing",
+        start: "3:00PM",
+        end: "4:00PM",
       },
     ],
   },
   {
-    date: 'April 6',
-    dateTime: '2022-04-06',
+    date: "April 6",
+    dateTime: "2022-04-06",
     summary:
-      'We close out the event previewing new techniques that are still in development.',
+      "We close out the event previewing new techniques that are still in development.",
     timeSlots: [
       {
-        name: 'Andrew Greene',
-        description: 'Neuralink dark patterns',
-        start: '9:00AM',
-        end: '10:00AM',
+        name: "Andrew Greene",
+        description: "Neuralink dark patterns",
+        start: "9:00AM",
+        end: "10:00AM",
       },
       {
-        name: 'Heather Terry',
-        description: 'DALL-E for passports',
-        start: '10:00AM',
-        end: '11:00AM',
+        name: "Heather Terry",
+        description: "DALL-E for passports",
+        start: "10:00AM",
+        end: "11:00AM",
       },
       {
-        name: 'Piers Wilkins',
-        description: 'Quantum password cracking',
-        start: '11:00AM',
-        end: '12:00PM',
+        name: "Piers Wilkins",
+        description: "Quantum password cracking",
+        start: "11:00AM",
+        end: "12:00PM",
       },
       {
-        name: 'Lunch',
+        name: "Lunch",
         description: null,
-        start: '12:00PM',
-        end: '1:00PM',
+        start: "12:00PM",
+        end: "1:00PM",
       },
       {
-        name: 'Gordon Sanderson',
-        description: 'SkyNet is coming',
-        start: '1:00PM',
-        end: '2:00PM',
+        name: "Gordon Sanderson",
+        description: "SkyNet is coming",
+        start: "1:00PM",
+        end: "2:00PM",
       },
       {
-        name: 'Kimberly Parsons',
-        description: 'Dark patterns for the metaverse',
-        start: '2:00PM',
-        end: '3:00PM',
+        name: "Kimberly Parsons",
+        description: "Dark patterns for the metaverse",
+        start: "2:00PM",
+        end: "3:00PM",
       },
       {
-        name: 'Richard Astley',
-        description: 'Knowing the game and playing it',
-        start: '3:00PM',
-        end: '4:00PM',
+        name: "Richard Astley",
+        description: "Knowing the game and playing it",
+        start: "3:00PM",
+        end: "4:00PM",
       },
     ],
   },
-]
+];
 
 function ScheduleTabbed() {
-  let [tabOrientation, setTabOrientation] = useState('horizontal')
+  let [tabOrientation, setTabOrientation] = useState("horizontal");
 
   useEffect(() => {
-    let smMediaQuery = window.matchMedia('(min-width: 640px)')
+    let smMediaQuery = window.matchMedia("(min-width: 640px)");
 
-    function onMediaQueryChange({ matches }) {
-      setTabOrientation(matches ? 'vertical' : 'horizontal')
+    function onMediaQueryChange({
+      matches,
+    }: MediaQueryListEvent | MediaQueryList) {
+      setTabOrientation(matches ? "vertical" : "horizontal");
     }
 
-    onMediaQueryChange(smMediaQuery)
-    smMediaQuery.addEventListener('change', onMediaQueryChange)
+    onMediaQueryChange(smMediaQuery);
+    smMediaQuery.addEventListener("change", onMediaQueryChange);
 
     return () => {
-      smMediaQuery.removeEventListener('change', onMediaQueryChange)
-    }
-  }, [])
+      smMediaQuery.removeEventListener("change", onMediaQueryChange);
+    };
+  }, []);
 
   return (
     <Tab.Group
       as="div"
       className="mx-auto grid max-w-2xl grid-cols-1 gap-y-6 sm:grid-cols-2 lg:hidden"
-      vertical={tabOrientation === 'vertical'}
+      vertical={tabOrientation === "vertical"}
     >
       <Tab.List className="-mx-4 flex gap-x-4 gap-y-10 overflow-x-auto pb-4 pl-4 sm:mx-0 sm:flex-col sm:pb-0 sm:pl-0 sm:pr-8">
-        {({ selectedIndex }) =>
-          schedule.map((day, dayIndex) => (
-            <div
-              key={day.dateTime}
-              className={clsx(
-                'relative w-3/4 flex-none pr-4 sm:w-auto sm:pr-0',
-                dayIndex !== selectedIndex && 'opacity-70'
-              )}
-            >
-              <DaySummary
-                day={{
-                  ...day,
-                  date: (
-                    <Tab className="[&:not(:focus-visible)]:focus:outline-none">
-                      <span className="absolute inset-0" />
-                      {day.date}
-                    </Tab>
-                  ),
-                }}
-              />
-            </div>
-          ))
-        }
+        {({ selectedIndex }) => (
+          <>
+            {schedule.map((day, dayIndex) => (
+              <div
+                key={day.dateTime}
+                className={clsx(
+                  "relative w-3/4 flex-none pr-4 sm:w-auto sm:pr-0",
+                  dayIndex !== selectedIndex && "opacity-70"
+                )}
+              >
+                <DaySummary
+                  day={{
+                    ...day,
+                    date: (
+                      <Tab className="[&:not(:focus-visible)]:focus:outline-none">
+                        <span className="absolute inset-0" />
+                        {day.date}
+                      </Tab>
+                    ),
+                  }}
+                />
+              </div>
+            ))}
+          </>
+        )}
       </Tab.List>
       <Tab.Panels>
         {schedule.map((day) => (
@@ -219,10 +238,10 @@ function ScheduleTabbed() {
         ))}
       </Tab.Panels>
     </Tab.Group>
-  )
+  );
 }
 
-function DaySummary({ day }) {
+function DaySummary({ day }: { day: ScheduleRecord }) {
   return (
     <>
       <h3 className="text-2xl font-semibold tracking-tight text-blue-900">
@@ -232,16 +251,19 @@ function DaySummary({ day }) {
         {day.summary}
       </p>
     </>
-  )
+  );
 }
 
-function TimeSlots({ day, className }) {
+function TimeSlots({
+  day,
+  className,
+}: HTMLProps<HTMLOListElement> & { day: ScheduleRecord }) {
   return (
     <ol
       role="list"
       className={clsx(
         className,
-        'space-y-8 bg-white/60 px-10 py-14 text-center shadow-xl shadow-blue-900/5 backdrop-blur'
+        "space-y-8 bg-white/60 px-10 py-14 text-center shadow-xl shadow-blue-900/5 backdrop-blur"
       )}
     >
       {day.timeSlots.map((timeSlot, timeSlotIndex) => (
@@ -263,17 +285,17 @@ function TimeSlots({ day, className }) {
           <p className="mt-1 font-mono text-sm text-slate-500">
             <time dateTime={`${day.dateTime}T${timeSlot.start}-08:00`}>
               {timeSlot.start}
-            </time>{' '}
-            -{' '}
+            </time>{" "}
+            -{" "}
             <time dateTime={`${day.dateTime}T${timeSlot.end}-08:00`}>
               {timeSlot.end}
-            </time>{' '}
+            </time>{" "}
             PST
           </p>
         </li>
       ))}
     </ol>
-  )
+  );
 }
 
 function ScheduleStatic() {
@@ -286,7 +308,7 @@ function ScheduleStatic() {
         </section>
       ))}
     </div>
-  )
+  );
 }
 
 export function Schedule() {
@@ -324,5 +346,5 @@ export function Schedule() {
         </Container>
       </div>
     </section>
-  )
+  );
 }

@@ -3,8 +3,9 @@ import Image from 'next/image'
 import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
 import backgroundImage from '@/images/background-newsletter.jpg'
+import { SVGProps } from 'react'
 
-function ArrowRightIcon(props) {
+function ArrowRightIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" {...props}>
       <path

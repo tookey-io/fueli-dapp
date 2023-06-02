@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from "react";
+import { SVGProps, useEffect, useId, useState } from "react";
 import Image from "next/image";
 import { Tab } from "@headlessui/react";
 import clsx from "clsx";
@@ -33,32 +33,38 @@ const days = [
       {
         name: "Steven McHail",
         role: "Designer at Globex Corporation",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
       {
         name: "Jaquelin Isch",
         role: "UX Design at InGen",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/98ee6b9d-c2e3-45e5-2367-0be40e17bc00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/98ee6b9d-c2e3-45e5-2367-0be40e17bc00/public",
       },
       {
         name: "Dianne Guilianelli",
         role: "General Manager at Initech",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
       {
         name: "Ronni Cantadore",
         role: "Design Engineer at Weyland-Yutani",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
       {
         name: "Erhart Cockrin",
         role: "Product Lead at Cyberdyne Systems",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
       {
         name: "Parker Johnson",
         role: "UI Designer at MomCorp",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
     ],
   },
@@ -70,32 +76,38 @@ const days = [
       {
         name: "Damaris Kimura",
         role: "Senior Engineer at OCP",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
       {
         name: "Ibrahim Frasch",
         role: "Programmer at Umbrella Corp",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
       {
         name: "Cathlene Burrage",
         role: "Frontend Developer at Buy n Large",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
       {
         name: "Rinaldo Beynon",
         role: "Data Scientist at Rekall",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
       {
         name: "Waylon Hyden",
         role: "DevOps at RDA Corporation",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
       {
         name: "Giordano Sagucio",
         role: "Game Developer at Soylent Corp",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
     ],
   },
@@ -107,38 +119,47 @@ const days = [
       {
         name: "Andrew Greene",
         role: "Frontend Developer at Ultratech",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
       {
         name: "Heather Terry",
         role: "Backend Developer at Xanatos Enterprises",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
       {
         name: "Piers Wilkins",
         role: "Full stack Developer at BiffCo",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
       {
         name: "Gordon Sanderson",
         role: "Mobile Developer at Cobra Industries",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
       {
         name: "Kimberly Parsons",
         role: "Game Developer at Tyrell Corporation",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
       {
         name: "Richard Astley",
         role: "CEO at Roll Out",
-        image: 'https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public',
+        image:
+          "https://imagedelivery.net/Nn4rZTVgDyPkcgjQdbz5AA/38d77115-289a-4eaf-82f5-8e538621cf00/public",
       },
     ],
   },
 ];
 
-function ImageClipPaths({ id, ...props }) {
+function ImageClipPaths({
+  id,
+  ...props
+}: SVGProps<SVGSVGElement> & { id: string }) {
   return (
     <svg aria-hidden="true" width={0} height={0} {...props}>
       <defs>
@@ -163,7 +184,9 @@ export function Riches() {
   useEffect(() => {
     let lgMediaQuery = window.matchMedia("(min-width: 1024px)");
 
-    function onMediaQueryChange({ matches }) {
+    function onMediaQueryChange({
+      matches,
+    }: MediaQueryListEvent | MediaQueryList) {
       setTabOrientation(matches ? "vertical" : "horizontal");
     }
 
@@ -191,7 +214,7 @@ export function Riches() {
             Riches
           </h2>
           <p className="mt-4 font-display text-2xl tracking-tight text-blue-900">
-            Join the league of digital riches fueling Web3's future.{" "}
+            Join the league of digital riches fueling Web3&apos;s future.{" "}
             <br className="hidden md:inline" />
             Be part of the revolution!
           </p>

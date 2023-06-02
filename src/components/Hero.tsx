@@ -28,7 +28,7 @@ export function Hero() {
           </h1>
           <div className="mt-6 space-y-6 font-display text-2xl tracking-tight text-blue-900">
             <p>
-              What's up, you crypto-taming virtuoso? Ever feel like our
+              What&apos;s up, you crypto-taming virtuoso? Ever feel like our
               code-writing genius could use a bit more fuel? Enter <strong>Fueli</strong> - our decentralized pit stop for open crypto codes! We turbocharge the
               best Web3 projects and back open-source champs.
             </p>

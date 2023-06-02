@@ -22,9 +22,9 @@ export default function Home() {
       <main>
         <Hero />
         <Riches />
-        <Schedule />
-        <Sponsors />
-        <Newsletter />
+        {/* <Schedule /> */}
+        {/* <Sponsors /> */}
+        {/* <Newsletter /> */}
       </main>
       <Footer />
     </>

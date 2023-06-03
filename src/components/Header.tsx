@@ -1,7 +1,6 @@
-import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
-import { DiamondIcon } from "@/components/DiamondIcon";
 import { Logo } from "@/components/Logo";
+import { ConnectKitButton } from "connectkit";
 
 export function Header() {
   return (
@@ -16,7 +15,8 @@ export function Header() {
           </div>
         </div>
         <div className="hidden sm:mt-10 sm:flex lg:mt-0 lg:grow lg:basis-0 lg:justify-end">
-          <Button href="#">Connect wallet</Button>
+          <ConnectKitButton />
+          {/* <Button href="#">Connect wallet</Button> */}
         </div>
       </Container>
     </header>

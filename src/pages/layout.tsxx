@@ -1,4 +1,4 @@
-import { Providers } from './providers'
+import { ChainProviders } from '@/wagmi/providers'
 
 export const metadata = {
   title: 'wagmi',
@@ -12,7 +12,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <ChainProviders>{children}</ChainProviders>
       </body>
     </html>
   )

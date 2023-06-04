@@ -55,7 +55,7 @@ export async function stepOneObtainRequest(id: string) {
     throw new Error("Minting request not found");
   }
 
-  // const redis = createClient({ url: "redis://localhost:6379" });
+  // const redis = createClient({ url: process.env.REDIS_URL });
   const request: {
     minter: string; // address
     tokenId: bigint;
@@ -474,7 +474,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return error(res, "Id should be a transaction hash", 400);
   }
 
-  const redis = createClient({ url: "redis://localhost:6379" });
+  const redis = createClient({ url: process.env.REDIS_URL });
   redis.on("error", (err) => console.log("Redis Client Error", err));
   await redis.connect();
 

@@ -29,7 +29,7 @@ const currentPrice = <TToken extends string, TCurrency extends string>(
 };
 
 export const buildStats = async () => {
-  const redis = createClient({ url: "redis://localhost:6379" });
+  const redis = createClient({ url: process.env.REDIS_URL });
   redis.on("error", (err) => console.log("Redis Client Error", err));
   await redis.connect();
   const eventsRespository = new Repository(mintEventSchema, redis);

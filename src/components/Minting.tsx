@@ -231,7 +231,7 @@ export function Minting() {
                                 New Fueling
                               </Dialog.Title>
                               <p className="text-sm text-gray-200">
-                                Join the league of digital riches fueling Web3's
+                                Join the league of digital riches fueling Web3&apos;s
                                 future or increase your effort.
                               </p>
                             </div>

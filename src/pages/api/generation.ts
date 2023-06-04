@@ -552,7 +552,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (typeof request.prompt !== "string") {
       return error(res, "Request promot not found", 404);
     }
-    const generation = await stepTwoGenerateImage(request.prompt, "anime");
+
+    const seed = Number(BigInt(id) % BigInt(Number.MAX_SAFE_INTEGER));
+    const generation = await stepTwoGenerateImage(request.prompt, "anime", 150, seed);
 
     await imageRepository.save(
       id,

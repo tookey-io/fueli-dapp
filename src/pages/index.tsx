@@ -22,11 +22,6 @@ export default function Home({
           name="description"
           content="fueling open code with web3 riches!"
         />
-
-        <script src="https://cdn.jsdelivr.net/npm/hls.js@0.12.4"></script>
-        <script src="https://d1ktbyo67sh8fw.cloudfront.net/js/theta.umd.min.js"></script>
-        <script src="https://d1ktbyo67sh8fw.cloudfront.net/js/theta-hls-plugin.umd.min.js"></script>
-        <script src="https://d1ktbyo67sh8fw.cloudfront.net/js/videojs-theta-plugin.min.js"></script>
       </Head>
       <Header />
       <main>

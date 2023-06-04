@@ -1,5 +1,5 @@
 import { defineConfig } from "@wagmi/cli";
-import { hardhat } from "@wagmi/cli/plugins";
+import { hardhat, react } from "@wagmi/cli/plugins";
 
 export default defineConfig({
   out: "src/wagmi/generated.ts",
@@ -7,5 +7,8 @@ export default defineConfig({
     hardhat({
       project: "./onchain",
     }),
+    react({
+
+    })
   ],
 });

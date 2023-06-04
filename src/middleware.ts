@@ -1,9 +1,9 @@
-import { JsonRpcApiProvider, JsonRpcProvider } from "ethers";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import * as ethers from 'ethers'
 
 
-export const provider = new JsonRpcProvider(process.env.RPC_URL)
+export const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_RPC_URL)
 
 
 // This function can be marked `async` if using `await` inside

@@ -2,7 +2,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export { FueliPicliMinter__factory } from "./FueliPicliMinter__factory";
-export { IERC20Mint__factory } from "./IERC20Mint__factory";
-export { IERC721Mint__factory } from "./IERC721Mint__factory";
 export { IFueli__factory } from "./IFueli__factory";
 export { IPicli__factory } from "./IPicli__factory";

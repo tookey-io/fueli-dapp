@@ -19,14 +19,13 @@ import { createClient } from "redis";
 import { Repository } from "redis-om";
 import FormData from "form-data";
 import { inspect } from "node:util";
+import { toUnix } from "@/utils/toUnix";
+import { defined } from "@/utils/defined";
+import { deployments } from "@/wagmi/deployments";
 // import { connect, fetchEnsName } from "@wagmi/core";
 // import { InjectedConnector } from "@wagmi/core/connectors/injected";
 
-function toUnix(date: Date) {
-  return Math.floor(date.getTime() / 1000);
-}
-
-async function stepOneObtainRequest(id: string) {
+export async function stepOneObtainRequest(id: string) {
   //collect transaction
   const tx = await provider.getTransactionReceipt(id);
 
@@ -34,12 +33,19 @@ async function stepOneObtainRequest(id: string) {
     throw new Error("Transaction not found");
   }
 
-  const parsedLogs = tx.logs.map((log) =>
-    new FueliPicliMinter__factory().interface.parseLog({
-      topics: [...log.topics],
-      data: log.data,
+  const parsedLogs = tx.logs
+    .map((log) => {
+      try {
+        return new FueliPicliMinter__factory().interface.parseLog({
+          topics: [...log.topics],
+          data: log.data,
+        });
+      } catch (err) {
+        console.error(err);
+        return undefined;
+      }
     })
-  );
+    .filter(defined);
 
   //collect token id
   const mintingRequest = parsedLogs.find(
@@ -56,15 +62,22 @@ async function stepOneObtainRequest(id: string) {
     prompt: string;
     message: string;
     value: bigint;
-  } = mintingRequest.args.toObject() as any;
+  } = {
+    minter: mintingRequest.args.minter,
+    tokenId: mintingRequest.args.tokenId,
+    prompt: mintingRequest.args.prompt,
+    message: mintingRequest.args.message,
+    value: mintingRequest.args.value,
+  };
 
   return request;
 }
 
-async function stepTwoGenerateImage(
+export async function stepTwoGenerateImage(
   prompt: string,
   preset: string,
-  steps: number = 50,
+  steps: number = 150,
+  seed: number = 0,
   engine: string | undefined = process.env.STABILITY_ENGINE
 ) {
   if (typeof engine === "undefined") {
@@ -73,12 +86,8 @@ async function stepTwoGenerateImage(
 
   const prompts = [
     {
-      text: "Close up render of cute rabbit toy on solid light background, studio lighting, best quality",
+      text: "cute cartoon bright rabbit " + prompt,
       weight: 1,
-    },
-    {
-      text: prompt,
-      weight: 0.8,
     },
   ];
 
@@ -93,7 +102,8 @@ async function stepTwoGenerateImage(
     {
       text_prompts: prompts,
       samples: 1,
-      steps: steps,
+      seed,
+      steps,
       style_preset: preset,
     },
     {
@@ -119,7 +129,7 @@ async function stepTwoGenerateImage(
   }
 }
 
-async function stepTreeUpload(imageData: string) {
+export async function stepTreeUpload(imageData: string) {
   const buffer = Buffer.from(imageData, "base64");
   const formData = new FormData();
   formData.append("file", buffer, {
@@ -166,7 +176,7 @@ async function stepTreeUpload(imageData: string) {
   }
 }
 
-async function stepFourGenerateVideo(
+export async function stepFourGenerateVideo(
   minter: string,
   message: string,
   value: string,
@@ -226,7 +236,7 @@ async function stepFourGenerateVideo(
   }
 }
 
-async function stepFiveWaitForVideo(id: string, attempt: number = 1) {
+export async function stepFiveWaitForVideo(id: string, attempt: number = 1) {
   const response = await axios
     .get<{
       id: string;
@@ -283,7 +293,7 @@ async function stepFiveWaitForVideo(id: string, attempt: number = 1) {
   }
 }
 
-async function stepSixTranscodeInitialization(videoUrl: string) {
+export async function stepSixTranscodeInitialization(videoUrl: string) {
   const response = await axios.post<{
     body: {
       videos: Array<{
@@ -352,7 +362,7 @@ async function stepSixTranscodeInitialization(videoUrl: string) {
   }
 }
 
-async function stepSevenTranscodeAwait(id: string, attempt: number = 1) {
+export async function stepSevenTranscodeAwait(id: string, attempt: number = 1) {
   const response = await axios.get<{
     body: {
       videos: Array<{
@@ -432,14 +442,29 @@ async function stepSevenTranscodeAwait(id: string, attempt: number = 1) {
   }
 }
 
-async function stepEightInjectMeta(tokenId: number, imageUrl: string, transcodeId: string, videoUrl: string) {
+export async function stepEightInjectMeta(
+  tokenId: number,
+  imageUrl: string,
+  transcodeId: string,
+  videoUrl: string
+) {
+  const { chainId } = await provider.getNetwork();
+  const picliAddress = deployments[chainId]?.picli;
+  if (!picliAddress) {
+    throw new Error(`Cannot find picli address in chain ${chainId}`);
+  }
   const wallet = new Wallet(process.env.INJECTOR_PRIVATE_KEY, provider);
   console.log(wallet.address);
-  const picli = Picli__factory.connect(process.env.PICLI, wallet);
-  console.log(await picli.ownerOf(tokenId));
-  console.log(await picli.tokenURI(tokenId));
-  await picli.inject(tokenId, imageUrl, transcodeId, videoUrl);
-  console.log(await picli.tokenURI(1));
+  const picli = Picli__factory.connect(picliAddress, wallet);
+
+  const currentMeta = await picli.meta(tokenId);
+  if (currentMeta.image !== imageUrl || currentMeta.videoId !== transcodeId) {
+    console.log("require inject");
+    await picli.inject(tokenId, imageUrl, transcodeId);
+
+    return true;
+  }
+  return false;
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -473,6 +498,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const state = await stateRepository.fetch(id);
 
+  if (state.lockedUntil instanceof Date) {
+    const difference = state.lockedUntil.getTime() - Date.now() - 5000;
+    console.log(difference)
+    if (difference > 0) {
+      await redis.disconnect();
+      return success(res, { ...state, locked: true });
+    }
+  }
+
+  state.lockedUntil = new Date(Date.now() + 1000 * 60 * 10); // 10 minutes
+  await stateRepository.save(state);
+
   // if ((state.status as number) > GenerationStatus.initialized) {
   //   const request = await requestRepository.fetch(id);
   //   request.tokenId = state.tokenId;
@@ -495,7 +532,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         prompt: request.prompt,
         // value: { type: "string" },
         value: [
-          ethers.formatEther(request.value),
+          ethers.utils.formatEther(request.value),
           process.env.NATIVE_SYMBOL,
         ].join(" "),
       })
@@ -504,7 +541,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     state.status = GenerationStatus.requestCollected;
     state.tokenId = Number(request.tokenId);
     state.updatedAt = toUnix(new Date());
+    state.lockedUntil = new Date(0);
     await stateRepository.save(state);
+
 
     return success(res, state);
   } else if (state.status === GenerationStatus.requestCollected) {
@@ -513,10 +552,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (typeof request.prompt !== "string") {
       return error(res, "Request promot not found", 404);
     }
-    const generation = await stepTwoGenerateImage(
-      request.prompt,
-      "digital-art"
-    );
+    const generation = await stepTwoGenerateImage(request.prompt, "anime");
 
     await imageRepository.save(
       id,
@@ -538,7 +574,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     state.status = GenerationStatus.imageGenerated;
     state.updatedAt = toUnix(new Date());
-
+    state.lockedUntil = new Date(0);
     await stateRepository.save(state);
     return success(res, state);
   } else if (state.status === GenerationStatus.imageGenerated) {
@@ -559,6 +595,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     state.status = GenerationStatus.imageUploadeed;
     state.imageUrl = uploadResult.variants[0];
     state.updatedAt = toUnix(new Date());
+    state.lockedUntil = new Date(0);
 
     await stateRepository.save(state);
 
@@ -591,6 +628,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     state.status = GenerationStatus.renderingVideoInitialized;
     state.videoUrl = generationRequestResult.url;
     state.updatedAt = toUnix(new Date());
+    state.lockedUntil = new Date(0);
     await stateRepository.save(state);
   } else if (state.status === GenerationStatus.renderingVideoInitialized) {
     const video = await videoRepository.fetch(id);
@@ -621,6 +659,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     state.status = GenerationStatus.renderingVideoFinished;
     state.videoUrl = url;
     state.updatedAt = toUnix(new Date());
+    state.lockedUntil = new Date(0);
     await stateRepository.save(state);
   } else if (state.status === GenerationStatus.renderingVideoFinished) {
     if (typeof state.videoUrl !== "string") {
@@ -640,6 +679,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     state.transcodeId = response.id;
     state.transcodeAccountId = response.serviceAccountId;
     state.updatedAt = toUnix(new Date());
+    state.lockedUntil = new Date(0);
     await stateRepository.save(state);
   } else if (state.status === GenerationStatus.transcodingVideoInitialized) {
     const transcode = await transcodeRepository.fetch(id);
@@ -661,37 +701,46 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       drm,
       serviceAccountId,
       playbackUrl,
-      playerUrl
+      playerUrl,
     } = await stepSevenTranscodeAwait(transcode.id);
 
-    transcode.id = transcodeId,
-    transcode.progress = progress
-    transcode.state = transcodeState
-    transcode.subState = subState
-    transcode.drm = drm
-    transcode.playbackUrl = playbackUrl
-    transcode.playerUrl = playerUrl
-    transcode.serviceAccountId = serviceAccountId
+    (transcode.id = transcodeId), (transcode.progress = progress);
+    transcode.state = transcodeState;
+    transcode.subState = subState;
+    transcode.drm = drm;
+    transcode.playbackUrl = playbackUrl;
+    transcode.playerUrl = playerUrl;
+    transcode.serviceAccountId = serviceAccountId;
 
-    state.status = GenerationStatus.transcodingVideoFinished
+    state.status = GenerationStatus.transcodingVideoFinished;
     state.transcodeId = transcodeId;
     state.transcodeAccountId = serviceAccountId;
     state.updatedAt = toUnix(new Date());
+    state.lockedUntil = new Date(0);
     await stateRepository.save(state);
-  } else if (state.status === GenerationStatus.transcodingVideoFinished) {
-    const { tokenId, transcodeId, imageUrl, videoUrl } = state
-    if (typeof tokenId !== 'number') throw new Error(`Invalid token id: ${tokenId}`)
-    if (typeof transcodeId !== 'string') throw new Error(`Invalid transcode id: ${transcodeId}`)
-    if (typeof imageUrl !== 'string') throw new Error(`Invalid image url: ${imageUrl}`)
-    if (typeof videoUrl !== 'string') throw new Error(`Invalid video url: ${videoUrl}`)
-    await stepEightInjectMeta(tokenId, imageUrl, transcodeId, videoUrl);
-
-    state.status = GenerationStatus.done;
-    state.updatedAt = toUnix(new Date());
-    await stateRepository.save(state);
+  } else if (
+    state.status === GenerationStatus.transcodingVideoFinished ||
+    state.status === GenerationStatus.done
+  ) {
+    const { tokenId, transcodeId, imageUrl, videoUrl } = state;
+    if (typeof tokenId !== "number")
+      throw new Error(`Invalid token id: ${tokenId}`);
+    if (typeof transcodeId !== "string")
+      throw new Error(`Invalid transcode id: ${transcodeId}`);
+    if (typeof imageUrl !== "string")
+      throw new Error(`Invalid image url: ${imageUrl}`);
+    if (typeof videoUrl !== "string")
+      throw new Error(`Invalid video url: ${videoUrl}`);
+    if (await stepEightInjectMeta(tokenId, imageUrl, transcodeId, videoUrl)) {
+      state.status = GenerationStatus.done;
+      state.updatedAt = toUnix(new Date());
+      state.lockedUntil = new Date(0);
+      await stateRepository.save(state);
+    }
   }
 
-  console.log(state);
+  state.lockedUntil = new Date(0);
+  await stateRepository.save(state);
   await redis.quit();
   return success(res, state);
 };

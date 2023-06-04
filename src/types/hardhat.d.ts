@@ -181,14 +181,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.FueliPicliMinter__factory>;
     getContractFactory(
-      name: "IERC20Mint",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC20Mint__factory>;
-    getContractFactory(
-      name: "IERC721Mint",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC721Mint__factory>;
-    getContractFactory(
       name: "IFueli",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IFueli__factory>;
@@ -415,16 +407,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.FueliPicliMinter>;
-    getContractAt(
-      name: "IERC20Mint",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IERC20Mint>;
-    getContractAt(
-      name: "IERC721Mint",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IERC721Mint>;
     getContractAt(
       name: "IFueli",
       address: string,

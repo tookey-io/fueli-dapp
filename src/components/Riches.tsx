@@ -1,10 +1,24 @@
-import { SVGProps, useEffect, useId, useState } from "react";
+import { SVGProps, useEffect, useId, useMemo, useState } from "react";
 import Image from "next/image";
 import { Tab } from "@headlessui/react";
 import clsx from "clsx";
 
 import { Container } from "@/components/Container";
 import { DiamondIcon } from "@/components/DiamondIcon";
+import { Connected } from "./blockchain/Connected";
+import { Button } from "./Button";
+import { Minting } from "./Minting";
+import {
+  picliABI,
+  useFueliPicliMinterMintingRequestEvent,
+  usePicliTotalSupply,
+} from "@/wagmi/generated";
+import { useContractReads } from "wagmi";
+import { TokenMeta } from "@/models/tokenMeta";
+import { defined } from "@/utils/defined";
+import { Picli } from "./Picli";
+import { usePicliAddress } from "@/hooks/usePicliAddress";
+import { useMinterAddress } from "@/hooks/useMinterAddress";
 // import andrewGreeneImage from "@/images/avatars/andrew-greene.jpg";
 // import cathleneBurrageImage from "@/images/avatars/cathlene-burrage.jpg";
 // import damarisKimuraImage from "@/images/avatars/damaris-kimura.jpg";
@@ -25,17 +39,17 @@ import { DiamondIcon } from "@/components/DiamondIcon";
 // import waylonHydenImage from "@/images/avatars/waylon-hyden.jpg";
 
 type RichRecord = {
-  name: string
-  role: string
-  image: string
-}
+  name: string;
+  role: string;
+  image: string;
+};
 
 type TrackRecord = {
-  name: string
-  date: string
-  dateTime: string
-  speakers: RichRecord[]
-}
+  name: string;
+  date: string;
+  dateTime: string;
+  speakers: RichRecord[];
+};
 
 const days: TrackRecord[] = [
   {
@@ -211,6 +225,55 @@ export function Riches() {
     };
   }, []);
 
+  const picliAddress = usePicliAddress();
+  const minterAddress = useMinterAddress();
+
+  const { data: total } = usePicliTotalSupply({
+    address: picliAddress,
+    watch: true,
+  });
+
+  const tokenFetchRequests = useMemo(() => {
+    if (total && picliAddress) {
+      return new Array(Math.min(Number(total), 9)).fill(0).map((_, index) => {
+        return {
+          address: picliAddress,
+          functionName: "tokenURI",
+          abi: picliABI,
+          args: [total - BigInt(index)],
+        } as const;
+      });
+    } else {
+      return undefined;
+    }
+  }, [total]);
+
+  const { data: tokenRawDatas } = useContractReads({
+    contracts: tokenFetchRequests,
+  });
+
+  const tokensData = useMemo(
+    () =>
+      tokenRawDatas?.map(({ result }) => {
+        return result
+          ? (JSON.parse(
+              Buffer.from(
+                result.substring("data:application/json;base64,".length),
+                "base64"
+              ).toString("utf-8")
+            ) as TokenMeta)
+          : undefined;
+      }),
+    [tokenRawDatas]
+  );
+
+  useFueliPicliMinterMintingRequestEvent({
+    address: minterAddress,
+    listener: (logs) => {
+      console.log("requests", logs);
+    },
+  });
+
   return (
     <section
       id="speakers"
@@ -219,18 +282,28 @@ export function Riches() {
     >
       <ImageClipPaths id={id} />
       <Container>
-        <div className="mx-auto max-w-2xl lg:mx-0">
+        <div className="mx-auto max-w-2xl flex-grow lg:ml-0 lg:mr-auto">
           <h2
             id="speakers-title"
             className="font-display text-4xl font-medium tracking-tighter text-blue-600 sm:text-5xl"
           >
-            Riches
+            Riches <>{total && total.toString()}</>
           </h2>
-          <p className="mt-4 font-display text-2xl tracking-tight text-blue-900">
-            Join the league of digital riches fueling Web3&apos;s future.{" "}
-            <br className="hidden md:inline" />
-            Be part of the revolution!
-          </p>
+        </div>
+        <div className="items-center lg:flex">
+          <div className="mx-auto max-w-2xl flex-grow lg:ml-0 lg:mr-auto">
+            <p className="mt-4 font-display text-2xl tracking-tight text-blue-900">
+              Join the league of digital riches fueling Web3&apos;s future.{" "}
+              <br className="hidden md:inline" />
+              Be part of the revolution!
+            </p>
+          </div>
+
+          <div className="mx-auto mt-8 flex w-auto max-w-2xl flex-shrink items-center justify-start lg:mx-0 lg:mt-0">
+            <Connected>
+              <Minting />
+            </Connected>
+          </div>
         </div>
         <Tab.Group
           as="div"
@@ -239,91 +312,74 @@ export function Riches() {
         >
           <div className="relative -mx-4 flex overflow-x-auto pb-4 sm:mx-0 sm:block sm:overflow-visible sm:pb-0">
             <div className="absolute bottom-0 left-0.5 top-2 hidden w-px bg-slate-200 lg:block" />
-            <Tab.List className="grid auto-cols-auto grid-flow-col justify-start gap-x-8 gap-y-10 whitespace-nowrap px-4 sm:mx-auto sm:max-w-2xl sm:grid-cols-3 sm:px-0 sm:text-center lg:grid-flow-row lg:grid-cols-1 lg:text-left">
-              {({ selectedIndex }) => (
-                <>
-                  {days.map((day, dayIndex) => (
-                    <div key={day.dateTime} className="relative lg:pl-8">
-                      <DiamondIcon
-                        className={clsx(
-                          "absolute left-[-0.5px] top-[0.5625rem] hidden h-1.5 w-1.5 overflow-visible lg:block",
-                          dayIndex === selectedIndex
-                            ? "fill-blue-600 stroke-blue-600"
-                            : "fill-transparent stroke-slate-400"
-                        )}
-                      />
-                      <div className="relative">
-                        <div
-                          className={clsx(
-                            "font-mono text-sm",
-                            dayIndex === selectedIndex
-                              ? "text-blue-600"
-                              : "text-slate-500"
-                          )}
-                        >
-                          <Tab className="[&:not(:focus-visible)]:focus:outline-none">
-                            <span className="absolute inset-0" />
-                            {day.name}
-                          </Tab>
-                        </div>
-                        <time
-                          dateTime={day.dateTime}
-                          className="mt-1.5 block text-2xl font-semibold tracking-tight text-blue-900"
-                        >
-                          {day.date}
-                        </time>
-                      </div>
+            <div className="grid auto-cols-auto grid-flow-col justify-start gap-x-8 gap-y-10 whitespace-nowrap px-4 sm:mx-auto sm:max-w-2xl sm:grid-cols-3 sm:px-0 sm:text-center lg:grid-flow-row lg:grid-cols-1 lg:text-left">
+              {days.map((day, dayIndex) => (
+                <div key={day.dateTime} className="relative lg:pl-8">
+                  <DiamondIcon
+                    className={clsx(
+                      "absolute left-[-0.5px] top-[0.5625rem] hidden h-1.5 w-1.5 overflow-visible lg:block",
+                      dayIndex === 0
+                        ? "fill-blue-600 stroke-blue-600"
+                        : "fill-transparent stroke-slate-400"
+                    )}
+                  />
+                  <div className="relative">
+                    <div
+                      className={clsx(
+                        "font-mono text-sm",
+                        dayIndex === 0 ? "text-blue-600" : "text-slate-500"
+                      )}
+                    >
+                      <Tab className="[&:not(:focus-visible)]:focus:outline-none">
+                        <span className="absolute inset-0" />
+                        {day.name}
+                      </Tab>
                     </div>
-                  ))}
-                </>
-              )}
-            </Tab.List>
+                    <time
+                      dateTime={day.dateTime}
+                      className="mt-1.5 block text-2xl font-semibold tracking-tight text-blue-900"
+                    >
+                      {day.date}
+                    </time>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          <Tab.Panels className="lg:col-span-3">
-            {days.map((day) => (
-              <Tab.Panel
-                key={day.dateTime}
-                className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 sm:gap-y-16 md:grid-cols-3 [&:not(:focus-visible)]:focus:outline-none"
-                unmount={false}
-              >
-                {day.speakers.map((speaker, speakerIndex) => (
-                  <div key={speakerIndex}>
+          <div className="lg:col-span-3">
+            <div className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 sm:gap-y-16 md:grid-cols-3 [&:not(:focus-visible)]:focus:outline-none">
+              {tokensData &&
+                tokensData.filter(defined).map((token, index) => (
+                  <div key={index}>
                     <div className="group relative transform overflow-hidden rounded-4xl">
                       <div
                         className={clsx(
-                          "aspect-square absolute bottom-6 left-0 right-4 top-0 rounded-4xl border transition duration-300 group-hover:scale-95 xl:right-6",
+                          "absolute bottom-6 left-0 right-4 top-0 aspect-square rounded-4xl border transition duration-300 xl:right-6",
                           [
                             "border-blue-300",
                             "border-indigo-300",
                             "border-sky-300",
-                          ][speakerIndex % 3]
+                          ][index % 3]
                         )}
                       />
-                      <div
-                        className="relative inset-0 bg-indigo-50 aspect-square max-w-[480px]"
-                        style={{ clipPath: `url(#${id}-${speakerIndex % 3})` }}
-                      >
-                        <img
-                          className="h-full w-full object-cover transition duration-300 group-hover:scale-110"
-                          src={speaker.image}
-                          width={480}
-                          height={480}
-                          alt=""
-                          sizes="(min-width: 1280px) 17.5rem, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
-                        />
+                      <div className="relative inset-0 aspect-square max-w-[480px] bg-indigo-50">
+                        {token && <Picli {...{ token }} />}
                       </div>
                     </div>
                     <h3 className="mt-8 font-display text-xl font-bold tracking-tight text-slate-900">
-                      {speaker.name}
+                      {token && token.privacy === "public"
+                        ? token.name
+                        : "Private"}
                     </h3>
                     <p className="mt-1 text-base tracking-tight text-slate-500">
-                      {speaker.role}
+                      {token && token.privacy === "public"
+                        ? token.description
+                        : "Private"}
                     </p>
                   </div>
                 ))}
-              </Tab.Panel>
-            ))}
-          </Tab.Panels>
+            </div>
+          </div>
         </Tab.Group>
       </Container>
     </section>

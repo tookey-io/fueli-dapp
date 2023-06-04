@@ -4,7 +4,7 @@ import { ConnectKitButton } from "connectkit";
 
 export function Header() {
   return (
-    <header className="relative z-50 pb-11 lg:pt-11">
+    <header className="relative z-10 pb-11 lg:pt-11 isolate">
       <Container className="flex flex-wrap items-center justify-center sm:justify-between lg:flex-nowrap">
         <div className="mt-10 lg:mt-0 lg:grow lg:basis-0">
           <Logo className="h-12 w-auto text-slate-900" />

@@ -2,7 +2,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { FueliPicliMinter } from "./FueliPicliMinter";
-export type { IERC20Mint } from "./IERC20Mint";
-export type { IERC721Mint } from "./IERC721Mint";
 export type { IFueli } from "./IFueli";
 export type { IPicli } from "./IPicli";

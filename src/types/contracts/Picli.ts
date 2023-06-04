@@ -37,8 +37,8 @@ export interface PicliInterface extends utils.Interface {
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
-    "init(address,string,string,uint256)": FunctionFragment;
-    "inject(uint256,string,string,string)": FunctionFragment;
+    "init(address,string,string,uint256,bool)": FunctionFragment;
+    "inject(uint256,string,string)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "meta(uint256)": FunctionFragment;
     "name()": FunctionFragment;
@@ -125,14 +125,14 @@ export interface PicliInterface extends utils.Interface {
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<boolean>
     ]
   ): string;
   encodeFunctionData(
     functionFragment: "inject",
     values: [
       PromiseOrValue<BigNumberish>,
-      PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>
     ]
@@ -437,6 +437,7 @@ export interface Picli extends BaseContract {
       prompt: PromiseOrValue<string>,
       message: PromiseOrValue<string>,
       value: PromiseOrValue<BigNumberish>,
+      privacy: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -444,7 +445,6 @@ export interface Picli extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       image: PromiseOrValue<string>,
       videoId: PromiseOrValue<string>,
-      videoUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -458,13 +458,13 @@ export interface Picli extends BaseContract {
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, string, string, string, string, string] & {
+      [BigNumber, string, string, string, string, boolean] & {
         value: BigNumber;
         prompt: string;
         message: string;
         image: string;
         videoId: string;
-        videoUrl: string;
+        privacy: boolean;
       }
     >;
 
@@ -583,6 +583,7 @@ export interface Picli extends BaseContract {
     prompt: PromiseOrValue<string>,
     message: PromiseOrValue<string>,
     value: PromiseOrValue<BigNumberish>,
+    privacy: PromiseOrValue<boolean>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -590,7 +591,6 @@ export interface Picli extends BaseContract {
     tokenId: PromiseOrValue<BigNumberish>,
     image: PromiseOrValue<string>,
     videoId: PromiseOrValue<string>,
-    videoUrl: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -604,13 +604,13 @@ export interface Picli extends BaseContract {
     arg0: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<
-    [BigNumber, string, string, string, string, string] & {
+    [BigNumber, string, string, string, string, boolean] & {
       value: BigNumber;
       prompt: string;
       message: string;
       image: string;
       videoId: string;
-      videoUrl: string;
+      privacy: boolean;
     }
   >;
 
@@ -729,6 +729,7 @@ export interface Picli extends BaseContract {
       prompt: PromiseOrValue<string>,
       message: PromiseOrValue<string>,
       value: PromiseOrValue<BigNumberish>,
+      privacy: PromiseOrValue<boolean>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -736,7 +737,6 @@ export interface Picli extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       image: PromiseOrValue<string>,
       videoId: PromiseOrValue<string>,
-      videoUrl: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -750,13 +750,13 @@ export interface Picli extends BaseContract {
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, string, string, string, string, string] & {
+      [BigNumber, string, string, string, string, boolean] & {
         value: BigNumber;
         prompt: string;
         message: string;
         image: string;
         videoId: string;
-        videoUrl: string;
+        privacy: boolean;
       }
     >;
 
@@ -944,6 +944,7 @@ export interface Picli extends BaseContract {
       prompt: PromiseOrValue<string>,
       message: PromiseOrValue<string>,
       value: PromiseOrValue<BigNumberish>,
+      privacy: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -951,7 +952,6 @@ export interface Picli extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       image: PromiseOrValue<string>,
       videoId: PromiseOrValue<string>,
-      videoUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1084,6 +1084,7 @@ export interface Picli extends BaseContract {
       prompt: PromiseOrValue<string>,
       message: PromiseOrValue<string>,
       value: PromiseOrValue<BigNumberish>,
+      privacy: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1091,7 +1092,6 @@ export interface Picli extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       image: PromiseOrValue<string>,
       videoId: PromiseOrValue<string>,
-      videoUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -32,6 +32,11 @@ const _abi = [
         name: "value",
         type: "uint256",
       },
+      {
+        internalType: "bool",
+        name: "privacy",
+        type: "bool",
+      },
     ],
     name: "init",
     outputs: [
@@ -59,11 +64,6 @@ const _abi = [
       {
         internalType: "string",
         name: "videoId",
-        type: "string",
-      },
-      {
-        internalType: "string",
-        name: "videoUrl",
         type: "string",
       },
     ],

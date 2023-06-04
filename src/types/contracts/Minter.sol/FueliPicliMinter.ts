@@ -38,8 +38,8 @@ export interface FueliPicliMinterInterface extends utils.Interface {
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
-    "inject(uint256,string,string,string)": FunctionFragment;
-    "mint(string,string)": FunctionFragment;
+    "inject(uint256,string,string)": FunctionFragment;
+    "mint(string,string,bool)": FunctionFragment;
     "picli()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
@@ -100,13 +100,16 @@ export interface FueliPicliMinterInterface extends utils.Interface {
     values: [
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<string>,
-      PromiseOrValue<string>,
       PromiseOrValue<string>
     ]
   ): string;
   encodeFunctionData(
     functionFragment: "mint",
-    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<boolean>
+    ]
   ): string;
   encodeFunctionData(functionFragment: "picli", values?: undefined): string;
   encodeFunctionData(
@@ -161,7 +164,7 @@ export interface FueliPicliMinterInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "treasury", data: BytesLike): Result;
 
   events: {
-    "MintingRequest(address,uint256,string,string,uint256)": EventFragment;
+    "MintingRequest(address,uint256,string,string,uint256,bool)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
@@ -179,9 +182,10 @@ export interface MintingRequestEventObject {
   prompt: string;
   message: string;
   value: BigNumber;
+  privacy: boolean;
 }
 export type MintingRequestEvent = TypedEvent<
-  [string, BigNumber, string, string, BigNumber],
+  [string, BigNumber, string, string, BigNumber, boolean],
   MintingRequestEventObject
 >;
 
@@ -282,13 +286,13 @@ export interface FueliPicliMinter extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       image: PromiseOrValue<string>,
       videoId: PromiseOrValue<string>,
-      videoUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     mint(
       prompt: PromiseOrValue<string>,
       message: PromiseOrValue<string>,
+      privacy: PromiseOrValue<boolean>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -345,13 +349,13 @@ export interface FueliPicliMinter extends BaseContract {
     tokenId: PromiseOrValue<BigNumberish>,
     image: PromiseOrValue<string>,
     videoId: PromiseOrValue<string>,
-    videoUrl: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   mint(
     prompt: PromiseOrValue<string>,
     message: PromiseOrValue<string>,
+    privacy: PromiseOrValue<boolean>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -408,13 +412,13 @@ export interface FueliPicliMinter extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       image: PromiseOrValue<string>,
       videoId: PromiseOrValue<string>,
-      videoUrl: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     mint(
       prompt: PromiseOrValue<string>,
       message: PromiseOrValue<string>,
+      privacy: PromiseOrValue<boolean>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -441,19 +445,21 @@ export interface FueliPicliMinter extends BaseContract {
   };
 
   filters: {
-    "MintingRequest(address,uint256,string,string,uint256)"(
+    "MintingRequest(address,uint256,string,string,uint256,bool)"(
       minter?: PromiseOrValue<string> | null,
       tokenId?: null,
       prompt?: null,
       message?: null,
-      value?: null
+      value?: null,
+      privacy?: PromiseOrValue<boolean> | null
     ): MintingRequestEventFilter;
     MintingRequest(
       minter?: PromiseOrValue<string> | null,
       tokenId?: null,
       prompt?: null,
       message?: null,
-      value?: null
+      value?: null,
+      privacy?: PromiseOrValue<boolean> | null
     ): MintingRequestEventFilter;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)"(
@@ -522,13 +528,13 @@ export interface FueliPicliMinter extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       image: PromiseOrValue<string>,
       videoId: PromiseOrValue<string>,
-      videoUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     mint(
       prompt: PromiseOrValue<string>,
       message: PromiseOrValue<string>,
+      privacy: PromiseOrValue<boolean>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -592,13 +598,13 @@ export interface FueliPicliMinter extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       image: PromiseOrValue<string>,
       videoId: PromiseOrValue<string>,
-      videoUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     mint(
       prompt: PromiseOrValue<string>,
       message: PromiseOrValue<string>,
+      privacy: PromiseOrValue<boolean>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

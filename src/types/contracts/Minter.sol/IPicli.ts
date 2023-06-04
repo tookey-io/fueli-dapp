@@ -25,8 +25,8 @@ import type {
 
 export interface IPicliInterface extends utils.Interface {
   functions: {
-    "init(address,string,string,uint256)": FunctionFragment;
-    "inject(uint256,string,string,string)": FunctionFragment;
+    "init(address,string,string,uint256,bool)": FunctionFragment;
+    "inject(uint256,string,string)": FunctionFragment;
   };
 
   getFunction(nameOrSignatureOrTopic: "init" | "inject"): FunctionFragment;
@@ -37,14 +37,14 @@ export interface IPicliInterface extends utils.Interface {
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<boolean>
     ]
   ): string;
   encodeFunctionData(
     functionFragment: "inject",
     values: [
       PromiseOrValue<BigNumberish>,
-      PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>
     ]
@@ -88,6 +88,7 @@ export interface IPicli extends BaseContract {
       prompt: PromiseOrValue<string>,
       message: PromiseOrValue<string>,
       value: PromiseOrValue<BigNumberish>,
+      privacy: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -95,7 +96,6 @@ export interface IPicli extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       image: PromiseOrValue<string>,
       videoId: PromiseOrValue<string>,
-      videoUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
@@ -105,6 +105,7 @@ export interface IPicli extends BaseContract {
     prompt: PromiseOrValue<string>,
     message: PromiseOrValue<string>,
     value: PromiseOrValue<BigNumberish>,
+    privacy: PromiseOrValue<boolean>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -112,7 +113,6 @@ export interface IPicli extends BaseContract {
     tokenId: PromiseOrValue<BigNumberish>,
     image: PromiseOrValue<string>,
     videoId: PromiseOrValue<string>,
-    videoUrl: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -122,6 +122,7 @@ export interface IPicli extends BaseContract {
       prompt: PromiseOrValue<string>,
       message: PromiseOrValue<string>,
       value: PromiseOrValue<BigNumberish>,
+      privacy: PromiseOrValue<boolean>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -129,7 +130,6 @@ export interface IPicli extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       image: PromiseOrValue<string>,
       videoId: PromiseOrValue<string>,
-      videoUrl: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -142,6 +142,7 @@ export interface IPicli extends BaseContract {
       prompt: PromiseOrValue<string>,
       message: PromiseOrValue<string>,
       value: PromiseOrValue<BigNumberish>,
+      privacy: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -149,7 +150,6 @@ export interface IPicli extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       image: PromiseOrValue<string>,
       videoId: PromiseOrValue<string>,
-      videoUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
   };
@@ -160,6 +160,7 @@ export interface IPicli extends BaseContract {
       prompt: PromiseOrValue<string>,
       message: PromiseOrValue<string>,
       value: PromiseOrValue<BigNumberish>,
+      privacy: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -167,7 +168,6 @@ export interface IPicli extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       image: PromiseOrValue<string>,
       videoId: PromiseOrValue<string>,
-      videoUrl: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };

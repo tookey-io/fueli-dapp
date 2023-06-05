@@ -5,16 +5,16 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { Riches } from "@/components/Riches";
-import { InferGetStaticPropsType } from "next";
+import { InferGetServerSidePropsType } from "next";
 import { buildStats } from "./api/stats";
 
-export const getStaticProps = async () => {
+export const getServerSideProps = async () => {
   return { props: { stats: await buildStats(await getRedisConnection()) } };
 };
 
 export default function Home({
   stats,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <>
       <Head>

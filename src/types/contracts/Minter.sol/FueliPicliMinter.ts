@@ -31,6 +31,7 @@ import type {
 export interface FueliPicliMinterInterface extends utils.Interface {
   functions: {
     "COST_PER_MESSAGE_BYTE()": FunctionFragment;
+    "COST_PER_MINT()": FunctionFragment;
     "COST_PER_PROMPT_BYTE()": FunctionFragment;
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "INJECTOR_ROLE()": FunctionFragment;
@@ -50,6 +51,7 @@ export interface FueliPicliMinterInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "COST_PER_MESSAGE_BYTE"
+      | "COST_PER_MINT"
       | "COST_PER_PROMPT_BYTE"
       | "DEFAULT_ADMIN_ROLE"
       | "INJECTOR_ROLE"
@@ -68,6 +70,10 @@ export interface FueliPicliMinterInterface extends utils.Interface {
 
   encodeFunctionData(
     functionFragment: "COST_PER_MESSAGE_BYTE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "COST_PER_MINT",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -128,6 +134,10 @@ export interface FueliPicliMinterInterface extends utils.Interface {
 
   decodeFunctionResult(
     functionFragment: "COST_PER_MESSAGE_BYTE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "COST_PER_MINT",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -257,6 +267,8 @@ export interface FueliPicliMinter extends BaseContract {
   functions: {
     COST_PER_MESSAGE_BYTE(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    COST_PER_MINT(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     COST_PER_PROMPT_BYTE(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
@@ -320,6 +332,8 @@ export interface FueliPicliMinter extends BaseContract {
 
   COST_PER_MESSAGE_BYTE(overrides?: CallOverrides): Promise<BigNumber>;
 
+  COST_PER_MINT(overrides?: CallOverrides): Promise<BigNumber>;
+
   COST_PER_PROMPT_BYTE(overrides?: CallOverrides): Promise<BigNumber>;
 
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
@@ -382,6 +396,8 @@ export interface FueliPicliMinter extends BaseContract {
 
   callStatic: {
     COST_PER_MESSAGE_BYTE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    COST_PER_MINT(overrides?: CallOverrides): Promise<BigNumber>;
 
     COST_PER_PROMPT_BYTE(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -499,6 +515,8 @@ export interface FueliPicliMinter extends BaseContract {
   estimateGas: {
     COST_PER_MESSAGE_BYTE(overrides?: CallOverrides): Promise<BigNumber>;
 
+    COST_PER_MINT(overrides?: CallOverrides): Promise<BigNumber>;
+
     COST_PER_PROMPT_BYTE(overrides?: CallOverrides): Promise<BigNumber>;
 
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
@@ -564,6 +582,8 @@ export interface FueliPicliMinter extends BaseContract {
     COST_PER_MESSAGE_BYTE(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    COST_PER_MINT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     COST_PER_PROMPT_BYTE(
       overrides?: CallOverrides

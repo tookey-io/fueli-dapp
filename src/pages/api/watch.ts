@@ -5,16 +5,13 @@ import {
   mintEventSchema,
   watcherSchema,
 } from "@/backend/models";
-import { success } from "@/backend/response.util";
-import withRedis from "@/backend/withRedis";
 import { withJsonAnswer } from "@/backend/withJsonAnswer";
+import withRedis from "@/backend/withRedis";
 import { provider } from "@/middleware";
 import { FueliPicliMinter__factory } from "@/types";
-import { filterDefined } from "@/utils/defined";
 import { deployments } from "@/wagmi/deployments";
 import { NextApiRequest, NextApiResponse } from "next";
-import { createClient } from "redis";
-import { Entity, EntityData, RedisConnection, Repository } from "redis-om";
+import { RedisConnection, Repository } from "redis-om";
 
 const handler = async (redis: RedisConnection, req: NextApiRequest, res: NextApiResponse) => {
   const { chainId } = await provider.getNetwork();

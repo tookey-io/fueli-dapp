@@ -13,6 +13,12 @@ redis.on("error", (err) => {
   connecting = false;
 });
 
+redis.on("end", () => {
+  connected = false;
+  connecting = false;
+});
+
+
 redis.on("connect", () => {
   connected = true;
   connecting = false;

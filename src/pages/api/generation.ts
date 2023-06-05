@@ -507,7 +507,6 @@ const handler = async (
     const difference = state.lockedUntil.getTime() - Date.now() - 5000;
     console.log(difference);
     if (difference > 0) {
-      await redis.disconnect();
       return { ...state, locked: true };
     }
   }
@@ -557,7 +556,7 @@ const handler = async (
       throw new NotFound("Request promot not found");
     }
 
-    const seed = Number(BigInt(id) % BigInt(Number.MAX_SAFE_INTEGER));
+    const seed = Number(BigInt(id) % BigInt(1e6));
     const generation = await stepTwoGenerateImage(
       request.prompt,
       "anime",

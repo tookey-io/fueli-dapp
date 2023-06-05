@@ -48,7 +48,7 @@ export const theta = {
 } as const;
 
 const { chains, publicClient } = configureChains(
-  [localnet, theta],
+  [theta, localnet],
   [
     jsonRpcProvider({
       rpc: (chain) => {

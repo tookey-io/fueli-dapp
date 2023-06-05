@@ -26,6 +26,7 @@ export function error<T extends ToString>(
       betterJson({
         status: "error",
         error,
+        code,
         elapsed
       }),
       code
@@ -36,6 +37,7 @@ export function error<T extends ToString>(
       betterJson({
         status: "error",
         error: err,
+        code,
         meta: error.toString(),
         elapsed
       }),
@@ -51,6 +53,7 @@ export function success<T extends ToString>(res: NextApiResponse, data: T, elaps
       betterJson({
         status: "ok",
         data,
+        code: 200,
         elapsed
       }),
       200

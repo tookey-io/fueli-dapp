@@ -6,15 +6,16 @@ import {
   watcherSchema,
 } from "@/backend/models";
 import { success } from "@/backend/response.util";
+import withRedis, { withJsonAnswer } from "@/backend/withRedis";
 import { provider } from "@/middleware";
 import { FueliPicliMinter__factory } from "@/types";
 import { filterDefined } from "@/utils/defined";
 import { deployments } from "@/wagmi/deployments";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "redis";
-import { Entity, EntityData, Repository } from "redis-om";
+import { Entity, EntityData, RedisConnection, Repository } from "redis-om";
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (redis: RedisConnection, req: NextApiRequest, res: NextApiResponse) => {
   const { chainId } = await provider.getNetwork();
   const deployment = deployments[chainId];
 
@@ -39,16 +40,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     token: number;
   }> = [];
 
-  const redis = createClient({ url: process.env.REDIS_URL });
-  redis.on("error", (err) => console.log("Redis Client Error", err));
-  await redis.connect();
   const stateRepository = new Repository(generationSchema, redis);
   const watcherRepository = new Repository(watcherSchema, redis);
   const eventsRespository = new Repository(mintEventSchema, redis);
 
   let watcherState = await watcherRepository.fetch(chainId.toString());
-
-  console.log(watcherState);
 
   if (typeof watcherState.latestBlock !== "number") {
     watcherState = await createEntity({
@@ -118,15 +114,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .search()
     .allIds()
     .then((ids) =>
-      Promise.all(ids.map((tx) => stateRepository.fetch(tx))).then((states) =>
-        states.filter((state) => state.status !== GenerationStatus.done)
+      Promise.all(
+        ids.map(async (tx) => ({ tx, state: await stateRepository.fetch(tx) }))
+      ).then((records) =>
+        records.filter(({ state }) => state.status !== GenerationStatus.done)
       )
     );
 
-  return success(res, {
+  return {
     processing,
     newEvents: requests,
-  });
+  };
 };
 
-export default handler;
+export default withJsonAnswer(withRedis(handler));

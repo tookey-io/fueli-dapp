@@ -1,6 +1,6 @@
 import { NextApiResponse } from "next";
 
-interface ToString {
+export interface ToString {
   toString(): string;
 }
 
@@ -17,7 +17,8 @@ function answer(response: NextApiResponse, message: string, code: number) {
 export function error<T extends ToString>(
   res: NextApiResponse,
   error: T,
-  code: number = 500
+  code: number = 500, 
+  elapsed?: number
 ) {
   try {
     return answer(
@@ -25,6 +26,7 @@ export function error<T extends ToString>(
       betterJson({
         status: "error",
         error,
+        elapsed
       }),
       code
     );
@@ -35,19 +37,21 @@ export function error<T extends ToString>(
         status: "error",
         error: err,
         meta: error.toString(),
+        elapsed
       }),
       500
     );
   }
 }
 
-export function success<T extends ToString>(res: NextApiResponse, data: T) {
+export function success<T extends ToString>(res: NextApiResponse, data: T, elapsed?: number) {
   try {
     return answer(
       res,
       betterJson({
         status: "ok",
         data,
+        elapsed
       }),
       200
     );
@@ -58,6 +62,7 @@ export function success<T extends ToString>(res: NextApiResponse, data: T) {
         status: "error",
         error: err,
         meta: data.toString(),
+        elapsed
       }),
       500
     );

@@ -1,15 +1,17 @@
 import {
   MintEventEntity,
+  PriceEntity,
   createEntity,
   mintEventSchema,
   priceSchema,
 } from "@/backend/models";
 import { success } from "@/backend/response.util";
+import { withJsonAnswer } from "@/backend/withRedis";
 import axios from "axios";
 import * as ethers from "ethers";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "redis";
-import { Repository } from "redis-om";
+import { RedisConnection, Repository } from "redis-om";
 
 const PRICE_UPDATE_DELAY = 1000 * 60 * 30; // 30 minutes
 
@@ -28,30 +30,28 @@ const currentPrice = <TToken extends string, TCurrency extends string>(
     .then((response) => response.data[token][currency]);
 };
 
-export const buildStats = async () => {
-  const redis = createClient({ url: process.env.REDIS_URL });
-  redis.on("error", (err) => console.log("Redis Client Error", err));
-  await redis.connect();
-  const eventsRespository = new Repository(mintEventSchema, redis);
-  const priceRepository = new Repository(priceSchema, redis);
+export const buildStats = async (redis: RedisConnection) => {
+  const eventsRespository = new Repository(mintEventSchema, redis!);
+  const priceRepository = new Repository(priceSchema, redis!);
 
   const events = (await eventsRespository
     .search()
     .all()) as Array<MintEventEntity>;
 
-  let current = await priceRepository.fetch("CURRENT");
+  let current = (await priceRepository.fetch("CURRENT")) as PriceEntity;
+
   if (
     typeof current.price !== "number" ||
     !(current.createdAt instanceof Date) ||
-    current.createdAt.getTime() < Date.now() + PRICE_UPDATE_DELAY
+    current.createdAt.getTime() + PRICE_UPDATE_DELAY < Date.now()
   ) {
     console.log("update price!!!!!!!!!!");
-    // current = await priceRepository.save(
-    //   "CURRENT",
-    //   createEntity({
-    //     price: await currentPrice("theta-fuel", "usd"),
-    //   })
-    // );
+    current = (await priceRepository.save(
+      "CURRENT",
+      createEntity({
+        price: await currentPrice("theta-fuel", "usd"),
+      })
+    )) as PriceEntity;
   }
 
   const totalFuel = Number(
@@ -72,8 +72,12 @@ export const buildStats = async () => {
   };
 };
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  success(res, await buildStats());
+const handler = (
+  redis: RedisConnection,
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  return buildStats(redis);
 };
 
-export default handler;
+export default withJsonAnswer(withRedis(handler));

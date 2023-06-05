@@ -1,4 +1,5 @@
 import {
+  GenerationEntity,
   GenerationStatus,
   createEntity,
   generationSchema,
@@ -9,19 +10,22 @@ import {
   uploadSchema,
   videoSchema,
 } from "@/backend/models";
-import { error, success } from "@/backend/response.util";
+import withRedis, { withJsonAnswer } from "@/backend/withRedis";
 import { provider } from "@/middleware";
 import { FueliPicliMinter__factory, Picli__factory } from "@/types";
-import axios, { Axios, AxiosError } from "axios";
-import { ethers, Wallet } from "ethers";
-import { NextApiRequest, NextApiResponse } from "next";
-import { createClient } from "redis";
-import { Repository } from "redis-om";
-import FormData from "form-data";
-import { inspect } from "node:util";
-import { toUnix } from "@/utils/toUnix";
 import { defined } from "@/utils/defined";
 import { deployments } from "@/wagmi/deployments";
+import {
+  BadRequest,
+  InternalServerError,
+  NotFound,
+} from "@curveball/http-errors";
+import axios, { AxiosError } from "axios";
+import { Wallet, ethers } from "ethers";
+import FormData from "form-data";
+import { NextApiRequest, NextApiResponse } from "next";
+import { inspect } from "node:util";
+import { RedisConnection, Repository } from "redis-om";
 // import { connect, fetchEnsName } from "@wagmi/core";
 // import { InjectedConnector } from "@wagmi/core/connectors/injected";
 
@@ -467,16 +471,16 @@ export async function stepEightInjectMeta(
   return false;
 }
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (
+  redis: RedisConnection,
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<GenerationEntity & { locked?: true }> => {
   const { id } = req.query;
 
   if (typeof id !== "string") {
-    return error(res, "Id should be a transaction hash", 400);
+    throw new BadRequest("Id should be a transaction hash");
   }
-
-  const redis = createClient({ url: process.env.REDIS_URL });
-  redis.on("error", (err) => console.log("Redis Client Error", err));
-  await redis.connect();
 
   const stateRepository = new Repository(generationSchema, redis);
   const requestRepository = new Repository(requestSchema, redis);
@@ -496,14 +500,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     );
   }
 
-  const state = await stateRepository.fetch(id);
+  const state = (await stateRepository.fetch(id)) as GenerationEntity;
 
   if (state.lockedUntil instanceof Date) {
     const difference = state.lockedUntil.getTime() - Date.now() - 5000;
-    console.log(difference)
+    console.log(difference);
     if (difference > 0) {
       await redis.disconnect();
-      return success(res, { ...state, locked: true });
+      return { ...state, locked: true };
     }
   }
 
@@ -540,21 +544,25 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     state.status = GenerationStatus.requestCollected;
     state.tokenId = Number(request.tokenId);
-    state.updatedAt = toUnix(new Date());
+    state.updatedAt = new Date();
     state.lockedUntil = new Date(0);
     await stateRepository.save(state);
 
-
-    return success(res, state);
+    return state;
   } else if (state.status === GenerationStatus.requestCollected) {
     const request = await requestRepository.fetch(id);
 
     if (typeof request.prompt !== "string") {
-      return error(res, "Request promot not found", 404);
+      throw new NotFound("Request promot not found");
     }
 
     const seed = Number(BigInt(id) % BigInt(Number.MAX_SAFE_INTEGER));
-    const generation = await stepTwoGenerateImage(request.prompt, "anime", 150, seed);
+    const generation = await stepTwoGenerateImage(
+      request.prompt,
+      "anime",
+      150,
+      seed
+    );
 
     await imageRepository.save(
       id,
@@ -575,15 +583,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     state.status = GenerationStatus.imageGenerated;
-    state.updatedAt = toUnix(new Date());
+    state.updatedAt = new Date();
     state.lockedUntil = new Date(0);
     await stateRepository.save(state);
-    return success(res, state);
+    return state;
   } else if (state.status === GenerationStatus.imageGenerated) {
     const { data: imageData } = await imageDataRepository.fetch(id);
 
     if (typeof imageData !== "string") {
-      return error(res, `Image data corrupted... please try again later`, 500);
+      throw new InternalServerError(
+        `Image data corrupted... please try again later`
+      );
     }
     const uploadResult = await stepTreeUpload(imageData);
 
@@ -596,22 +606,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     state.status = GenerationStatus.imageUploadeed;
     state.imageUrl = uploadResult.variants[0];
-    state.updatedAt = toUnix(new Date());
+    state.updatedAt = new Date();
     state.lockedUntil = new Date(0);
 
     await stateRepository.save(state);
 
-    return success(res, state);
+    return state;
   } else if (state.status === GenerationStatus.imageUploadeed) {
     const request = await requestRepository.fetch(id);
     const { nick: minter, message, value } = request;
 
-    if (typeof minter !== "string") return error(res, "Minter isn't defined..");
+    if (typeof minter !== "string")
+      throw new InternalServerError("Minter isn't defined..");
     if (typeof message !== "string")
-      return error(res, "Message isn't defined..");
-    if (typeof value !== "string") return error(res, "Value isn't defined..");
+      throw new InternalServerError("Message isn't defined..");
+    if (typeof value !== "string")
+      throw new InternalServerError("Value isn't defined..");
     if (typeof state.imageUrl !== "string")
-      return error(res, "Image url isn't defined..");
+      throw new InternalServerError("Image url isn't defined..");
 
     const generationRequestResult = await stepFourGenerateVideo(
       minter,
@@ -629,7 +641,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     state.status = GenerationStatus.renderingVideoInitialized;
     state.videoUrl = generationRequestResult.url;
-    state.updatedAt = toUnix(new Date());
+    state.updatedAt = new Date();
     state.lockedUntil = new Date(0);
     await stateRepository.save(state);
   } else if (state.status === GenerationStatus.renderingVideoInitialized) {
@@ -660,12 +672,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     state.status = GenerationStatus.renderingVideoFinished;
     state.videoUrl = url;
-    state.updatedAt = toUnix(new Date());
+    state.updatedAt = new Date();
     state.lockedUntil = new Date(0);
     await stateRepository.save(state);
   } else if (state.status === GenerationStatus.renderingVideoFinished) {
     if (typeof state.videoUrl !== "string") {
-      return error(res, `VideoUrl must be a string. State corrupted`, 500);
+      throw new InternalServerError(
+        `VideoUrl must be a string. State corrupted`
+      );
     }
 
     const response = await stepSixTranscodeInitialization(state.videoUrl);
@@ -680,19 +694,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     state.status = GenerationStatus.transcodingVideoInitialized;
     state.transcodeId = response.id;
     state.transcodeAccountId = response.serviceAccountId;
-    state.updatedAt = toUnix(new Date());
+    state.updatedAt = new Date();
     state.lockedUntil = new Date(0);
     await stateRepository.save(state);
   } else if (state.status === GenerationStatus.transcodingVideoInitialized) {
     const transcode = await transcodeRepository.fetch(id);
     if (typeof transcode.id !== "string")
-      return error(res, `transcode.id must be a string. State corrupted`, 500);
+      throw new InternalServerError(
+        `transcode.id must be a string. State corrupted`
+      );
 
     if (state.transcodeId !== transcode.id)
-      return error(
-        res,
-        `Invalid transcode id: ${transcode.id} != ${state.transcodeId}`,
-        500
+      throw new InternalServerError(
+        `Invalid transcode id: ${transcode.id} != ${state.transcodeId}`
       );
 
     const {
@@ -717,7 +731,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     state.status = GenerationStatus.transcodingVideoFinished;
     state.transcodeId = transcodeId;
     state.transcodeAccountId = serviceAccountId;
-    state.updatedAt = toUnix(new Date());
+    state.updatedAt = new Date();
     state.lockedUntil = new Date(0);
     await stateRepository.save(state);
   } else if (
@@ -735,7 +749,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       throw new Error(`Invalid video url: ${videoUrl}`);
     if (await stepEightInjectMeta(tokenId, imageUrl, transcodeId, videoUrl)) {
       state.status = GenerationStatus.done;
-      state.updatedAt = toUnix(new Date());
+      state.updatedAt = new Date();
       state.lockedUntil = new Date(0);
       await stateRepository.save(state);
     }
@@ -744,7 +758,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   state.lockedUntil = new Date(0);
   await stateRepository.save(state);
   await redis.quit();
-  return success(res, state);
+  return state;
 };
 
-export default handler;
+export default withJsonAnswer(withRedis(handler));

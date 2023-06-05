@@ -6,9 +6,17 @@ import { Hero } from "@/components/Hero";
 import { Riches } from "@/components/Riches";
 import { InferGetStaticPropsType } from "next";
 import { buildStats } from "./api/stats";
+import { createClient } from "redis";
 
 export const getStaticProps = async () => {
-  return { props: { stats: await buildStats() } };
+  const redis = createClient({ url: process.env.REDIS_URL });
+  redis.on("error", (err) => console.log("Redis Client Error", err));
+  await redis.connect();
+  try {
+    return { props: { stats: await buildStats(redis) } };
+  } finally {
+    await redis.disconnect();
+  }
 };
 
 export default function Home({

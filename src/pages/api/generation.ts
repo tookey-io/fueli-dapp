@@ -10,7 +10,8 @@ import {
   uploadSchema,
   videoSchema,
 } from "@/backend/models";
-import withRedis, { withJsonAnswer } from "@/backend/withRedis";
+import withRedis from "@/backend/withRedis";
+import { withJsonAnswer } from "@/backend/withJsonAnswer";
 import { provider } from "@/middleware";
 import { FueliPicliMinter__factory, Picli__factory } from "@/types";
 import { defined } from "@/utils/defined";

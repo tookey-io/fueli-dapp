@@ -5,12 +5,11 @@ import {
   mintEventSchema,
   priceSchema,
 } from "@/backend/models";
-import { success } from "@/backend/response.util";
-import { withJsonAnswer } from "@/backend/withRedis";
+import withRedis from "@/backend/withRedis";
+import { withJsonAnswer } from "@/backend/withJsonAnswer";
 import axios from "axios";
 import * as ethers from "ethers";
 import { NextApiRequest, NextApiResponse } from "next";
-import { createClient } from "redis";
 import { RedisConnection, Repository } from "redis-om";
 
 const PRICE_UPDATE_DELAY = 1000 * 60 * 30; // 30 minutes

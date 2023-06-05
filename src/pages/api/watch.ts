@@ -6,7 +6,8 @@ import {
   watcherSchema,
 } from "@/backend/models";
 import { success } from "@/backend/response.util";
-import withRedis, { withJsonAnswer } from "@/backend/withRedis";
+import withRedis from "@/backend/withRedis";
+import { withJsonAnswer } from "@/backend/withJsonAnswer";
 import { provider } from "@/middleware";
 import { FueliPicliMinter__factory } from "@/types";
 import { filterDefined } from "@/utils/defined";

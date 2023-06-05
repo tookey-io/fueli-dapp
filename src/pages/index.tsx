@@ -1,22 +1,15 @@
 import Head from "next/head";
 
+import { getRedisConnection } from "@/backend/withRedis";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { Riches } from "@/components/Riches";
 import { InferGetStaticPropsType } from "next";
 import { buildStats } from "./api/stats";
-import { createClient } from "redis";
 
 export const getStaticProps = async () => {
-  const redis = createClient({ url: process.env.REDIS_URL });
-  redis.on("error", (err) => console.log("Redis Client Error", err));
-  await redis.connect();
-  try {
-    return { props: { stats: await buildStats(redis) } };
-  } finally {
-    await redis.disconnect();
-  }
+  return { props: { stats: await buildStats(await getRedisConnection()) } };
 };
 
 export default function Home({
